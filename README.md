@@ -7,7 +7,7 @@ Personal [pi](https://github.com/badlogic/pi-mono) extensions, distributed as a 
 On any machine:
 
 ```bash
-pi install github.com/Haxi52/pi-extensions
+pi install git:github.com/Haxi52/pi-extensions
 ```
 
 Update:
@@ -19,7 +19,7 @@ pi update --extensions
 Remove:
 
 ```bash
-pi remove github.com/Haxi52/pi-extensions
+pi remove git:github.com/Haxi52/pi-extensions
 ```
 
 ## Extensions
