@@ -1,0 +1,7 @@
+{
+  "name": "pi-extensions",
+  "version": "0.1.0",
+  "description": "Personal pi extensions (bg-notify: background tasks with agent notifications)",
+  "keywords": ["pi-package"],
+  "license": "MIT"
+}
