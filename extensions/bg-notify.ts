@@ -13,7 +13,7 @@
  *
  * Distribution:
  *   Published as a pi package: https://github.com/Haxi52/pi-extensions
- *   Install on other machines: pi install github.com/Haxi52/pi-extensions
+ *   Install on other machines: pi install git:github.com/Haxi52/pi-extensions
  *   Updates: pi update --extensions
  *
  * Tools:
