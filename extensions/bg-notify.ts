@@ -11,6 +11,11 @@
  *   pi -e ./extensions/bg-notify.ts
  * or copy into ~/.pi/agent/extensions/ for auto-discovery.
  *
+ * Distribution:
+ *   Published as a pi package: https://github.com/Haxi52/pi-extensions
+ *   Install on other machines: pi install github.com/Haxi52/pi-extensions
+ *   Updates: pi update --extensions
+ *
  * Tools:
  *   bg run  { command, name? }  - start command in background, returns task id
  *   bg list                     - list tasks and statuses
