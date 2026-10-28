@@ -3,9 +3,13 @@
  *
  * Long-running work (model downloads, cmake builds, training runs) is started
  * with the `bg` tool, which returns immediately. When the process exits, the
- * extension sends itself a user message ("task X finished, exit code N") that
- * triggers a new agent turn, so the agent notices completion on its own and
- * can check the log, continue the next step, or report to the user.
+ * extension sends a user message ("task X finished, exit code N") so the agent
+ * notices completion on its own, checks the log, and continues.
+ *
+ * Delivery is *steering*: if the agent is mid-run, the completion enters after
+ * the current assistant turn finishes its tool calls, i.e. before the next LLM
+ * call — not after the whole run settles. Set `PI_BG_NOTIFY_MODE=followUp` to
+ * fall back to end-of-run delivery.
  *
  * Load:
  *   pi -e ./extensions/bg-notify.ts
@@ -113,6 +117,10 @@ function terminalNotify(text: string): void {
 	}
 }
 
+/** How a completion message reaches the model while it is already running. */
+const deliveryMode: "steer" | "followUp" =
+	process.env.PI_BG_NOTIFY_MODE === "followUp" ? "followUp" : "steer";
+
 function notifyAgent(pi: ExtensionAPI, task: Task): void {
 	const ok = task.status === "done";
 	const text =
@@ -121,15 +129,13 @@ function notifyAgent(pi: ExtensionAPI, task: Task): void {
 			? "Read the tail of the log to confirm the result, then continue with the next step."
 			: "Read the tail of the log to see why it failed.");
 	try {
-		if (lastCtx && !lastCtx.isIdle()) {
-			// Agent is mid-stream: queue the news as a follow-up.
-			pi.sendUserMessage(text, { deliverAs: "followUp" });
-		} else {
-			// Agent is idle: this triggers a new turn.
-			pi.sendUserMessage(text);
-		}
+		// One call covers both states: when idle, prompt() starts a turn; when streaming,
+		// prompt() routes the message through deliveryMode. A steer lands after the
+		// in-flight assistant turn's tool calls, before the next LLM call, so the model
+		// sees the completion immediately, not at end of run.
+		pi.sendUserMessage(text, { deliverAs: deliveryMode });
 	} catch {
-		// Session may be shutting down; the ui.notify below still fires.
+		// Session may be shutting down; the ui.notify in onExit already fired.
 	}
 }
 
@@ -160,7 +166,8 @@ const bgTool = defineTool({
 		"Start long-running tasks in the background; you're notified when they finish. " +
 		"Prefer bg over bash, sleep, or polling for anything over ~30 seconds " +
 		"(builds, downloads, test suites, CI jobs, training, deploys). " +
-		"action=run returns a task id at once — launch, end your turn, resume on the completion message.",
+		"action=run returns a task id at once — launch it, keep working: the completion is " +
+		"steered into the conversation mid-run, after your current tool calls.",
 	parameters: BgParams,
 
 	async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
