@@ -163,11 +163,11 @@ const bgTool = defineTool({
 	name: "bg",
 	label: "Background task",
 	description:
-		"Start long-running tasks in the background; you're notified when they finish. " +
-		"Prefer bg over bash, sleep, or polling for anything over ~30 seconds " +
+		"Start long-running tasks in the background; the completion is steered into the conversation " +
+		"when the process exits. Prefer bg over bash, sleep, or polling for anything over ~30 seconds " +
 		"(builds, downloads, test suites, CI jobs, training, deploys). " +
-		"action=run returns a task id at once — launch it, keep working: the completion is " +
-		"steered into the conversation mid-run, after your current tool calls.",
+		"action=run returns a task id at once — launch it and keep working; the completion arrives after " +
+		"your current tool calls, so do not end your turn, poll, or check up on it.",
 	parameters: BgParams,
 
 	async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
@@ -214,7 +214,7 @@ const bgTool = defineTool({
 							type: "text" as const,
 							text:
 								`Started bg #${id} "${name}" (pid ${child.pid}). Log: ${logPath}\n` +
-								`You will receive a message when it finishes. Continue other work; do not poll.`,
+								`It is steered into the conversation when it exits. Keep working on other steps; do not poll, sleep, or end your turn waiting for it.`,
 						},
 					],
 					details: { task },
