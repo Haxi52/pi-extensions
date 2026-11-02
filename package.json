@@ -1,7 +1,10 @@
 {
   "name": "pi-extensions",
-  "version": "0.1.0",
-  "description": "Personal pi extensions (bg-notify: background tasks with agent notifications)",
+  "version": "0.2.0",
+  "description": "Personal pi extensions (bg-notify: background tasks with agent notifications; web-search: DuckDuckGo web search and page fetch tools)",
   "keywords": ["pi-package"],
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "node --experimental-strip-types --test \"tests/*.test.mts\""
+  }
 }
